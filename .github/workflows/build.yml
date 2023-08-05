@@ -304,5 +304,9 @@ jobs:
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
           tag_name: v${{ env.builddate }}.${{ github.run_number }}
-          files: "${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_${{ env.builddate }}.zip"
+          files: |
+            ${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_${{ env.builddate }}.zip
+            ${{ env.WORKSPACE }}/AnyKernel3/Image.gz
+            ${{ env.WORKSPACE }}/AnyKernel3/dtb.img
+            ${{ env.WORKSPACE }}/AnyKernel3/dtbo.img
           generate_release_notes: true
