@@ -288,6 +288,7 @@ jobs:
           fi
 
           cd AnyKernel3/
+          rm -rf .git
           zip -q -r "${{ env.anykernel }}.zip" *
 
       - name: "💾 Upload AnyKernel3 image => (${{ env.builddate }})"
