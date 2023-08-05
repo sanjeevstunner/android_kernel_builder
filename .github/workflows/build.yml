@@ -95,6 +95,16 @@ jobs:
 
           echo "🤔 Clone kernel source => ($KERNEL_REPO)"
 
+      - name: 🔢 Extract kernel version
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          kernel_version=$(grep "^VERSION = " Makefile | cut -d ' ' -f 3)
+          patchlevel=$(grep "^PATCHLEVEL = " Makefile | cut -d ' ' -f 3)
+          sublevel=$(grep "^SUBLEVEL = " Makefile | cut -d ' ' -f 3)
+          local_kernel_version="${kernel_version}.${patchlevel}.${sublevel}"
+          echo "Kernel Version: $local_kernel_version"
+          echo "KERNEL_VERSION=${local_kernel_version}" >> $GITHUB_ENV
+
       - name: "💫 Get toolchains"
         env:
           toolchains: "${{ toJSON(matrix.repos.toolchains) }}"
@@ -227,7 +237,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: Image-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}-${{ env.builddate }}
+          name: Image-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/Image
           if-no-files-found: ignore
           retention-days: 7
@@ -237,7 +247,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: Image.gz-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}-${{ env.builddate }}
+          name: Image.gz-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/Image.gz
           if-no-files-found: ignore
           retention-days: 7
@@ -247,7 +257,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: dtb-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}-${{ env.builddate }}
+          name: dtb-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/dtb.img
           if-no-files-found: ignore
           retention-days: 7
@@ -257,7 +267,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: dtbo.img-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}-${{ env.builddate }}
+          name: dtbo.img-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/dtbo.img
           if-no-files-found: ignore
           retention-days: 7
@@ -266,7 +276,7 @@ jobs:
         if: ${{ env.useAnykernel == 'true' }}
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
-          anykernel: "${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_${{ env.builddate }}"
+          anykernel: "${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}"
         run: |
           ls -al
 
@@ -295,17 +305,17 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ env.useAnykernel == 'true' }}
         with:
-          name: "${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_${{ env.builddate }}"
+          name: "${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}"
           path: AnyKernel3/*
 
-      - name: 🧧 Create GitHub Release => (${{ env.builddate }})
+      - name: 🧧 Create GitHub Release => (${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }})
         continue-on-error: true
         uses: softprops/action-gh-release@v1
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
-          tag_name: v${{ env.builddate }}.${{ github.run_number }}
+          tag_name: ${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           files: |
-            ${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_${{ env.builddate }}.zip
+            ${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}.zip
             ${{ env.WORKSPACE }}/AnyKernel3/Image.gz
             ${{ env.WORKSPACE }}/AnyKernel3/dtb.img
             ${{ env.WORKSPACE }}/AnyKernel3/dtbo.img
