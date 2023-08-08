@@ -232,12 +232,22 @@ jobs:
           echo "PATH Variable: $PATH"
           make ${{ env.args }}
 
+      - name: "Set release title and name for kernel zip and uploaded artifacts"
+        run: |
+          if [ "${{ env.withKernelSU }}" == "true" ]; then
+            echo "GITHUB_RELEASE_TITLE=${{ env.KERNEL_NAME }} v${{ env.KERNEL_VERSION }} for ${{ env.KERNEL_DEVICE }} with KernelSU | Build Date ${{ env.builddate }} | Build Number ${{ github.run_number }}" >> $GITHUB_ENV
+            echo "KERNEL_ZIP_NAME=${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.KERNEL_DEVICE }}-KernelSU-${{ env.builddate }}-Build_${{ github.run_number }}" >> $GITHUB_ENV
+          else
+            echo "GITHUB_RELEASE_TITLE=${{ env.KERNEL_NAME }} v${{ env.KERNEL_VERSION }} for ${{ env.KERNEL_DEVICE }} | Build Date ${{ env.builddate }} | Build Number ${{ github.run_number }}" >> $GITHUB_ENV
+            echo "KERNEL_ZIP_NAME=${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.KERNEL_DEVICE }}-${{ env.builddate }}-Build_${{ github.run_number }}" >> $GITHUB_ENV
+          fi
+
       - name: "💛 Upload Image"
         uses: actions/upload-artifact@v3
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: Image-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          name: Image-${{ env.KERNEL_ZIP_NAME }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/Image
           if-no-files-found: ignore
           retention-days: 7
@@ -247,7 +257,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: Image.gz-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          name: Image.gz-${{ env.KERNEL_ZIP_NAME }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/Image.gz
           if-no-files-found: ignore
           retention-days: 7
@@ -257,7 +267,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: dtb-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          name: dtb-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_ZIP_NAME }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/dtb.img
           if-no-files-found: ignore
           retention-days: 7
@@ -267,7 +277,7 @@ jobs:
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: dtbo.img-${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          name: dtbo.img-${{ env.KERNEL_ZIP_NAME }}
           path: ${{ env.OUT_DIR }}/arch/${{ env.arch }}/boot/dtbo.img
           if-no-files-found: ignore
           retention-days: 7
@@ -276,7 +286,7 @@ jobs:
         if: ${{ env.useAnykernel == 'true' }}
         env:
           arch: ${{ steps.generate-args.outputs.ARCH }}
-          anykernel: "${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}"
+          anykernel: "${{ env.WORKSPACE }}/${{ env.KERNEL_ZIP_NAME }}"
         run: |
           ls -al
 
@@ -305,19 +315,19 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ env.useAnykernel == 'true' }}
         with:
-          name: "${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}"
+          name: "${{ env.KERNEL_ZIP_NAME }}"
           path: AnyKernel3/*
 
-      - name: 🧧 Create GitHub Release => (${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }})
+      - name: 🧧 Create GitHub Release => (${{ env.GITHUB_RELEASE_TITLE }})
         continue-on-error: true
         uses: softprops/action-gh-release@v1
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
-          name: ${{ env.KERNEL_NAME }} v${{ env.KERNEL_VERSION }} for ${{ env.KERNEL_DEVICE }} | Build Date ${{ env.builddate }} | Build Number ${{ github.run_number }}
-          tag_name: ${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          name: ${{ env.GITHUB_RELEASE_TITLE }}
+          tag_name: ${{ env.KERNEL_ZIP_NAME }}
           prerelease: true
           files: |
-            ${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}.zip
+            ${{ env.WORKSPACE }}/${{ env.KERNEL_ZIP_NAME }}.zip
             ${{ env.WORKSPACE }}/AnyKernel3/Image.gz
             ${{ env.WORKSPACE }}/AnyKernel3/dtb.img
             ${{ env.WORKSPACE }}/AnyKernel3/dtbo.img
