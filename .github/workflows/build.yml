@@ -324,6 +324,14 @@ jobs:
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
           name: ${{ env.GITHUB_RELEASE_TITLE }}
+          body: |
+            ## Common Instructions. 
+            - Download and flash just the zip file with the name `${{ env.KERNEL_ZIP_NAME }}.zip`, other images are uploaded so people can just download those artifacts separately when needed. 
+            - If this release is marked as **pre-release**, I highly recommend you guys not use it, as it is meant for development purposes and is **not intended for daily use.** 
+            - It is a good practice to have a backup of your existing kernel [or respective partition images] using your recovery of choice or kernel manager, before flashing 3rd party kernels. 
+            - If the kernel includes Kernel SU, it'll be mentioned in the release title and kernel zip. 
+            - You can ping me, Sanjeev aka Chandler in my [Telegram group](https://t.me/chandlers_chat). While you're at it, consider subscribing to my [Telegram Channel](https://t.me/chandlers_channel) if you find value in it 😉
+            > And here is your reminder that you're doing great, just have more water and embrace good sleep ❤️ 
           tag_name: ${{ env.KERNEL_ZIP_NAME }}
           prerelease: true
           files: |
