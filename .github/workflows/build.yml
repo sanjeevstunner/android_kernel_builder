@@ -314,6 +314,7 @@ jobs:
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
           tag_name: ${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
+          prerelease: true
           files: |
             ${{ env.WORKSPACE }}/${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}.zip
             ${{ env.WORKSPACE }}/AnyKernel3/Image.gz
