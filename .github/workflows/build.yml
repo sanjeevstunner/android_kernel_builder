@@ -313,6 +313,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: ${{ env.useAnykernel == 'true' && env.release == 'true' }}
         with:
+          name: ${{ env.KERNEL_NAME }} v${{ env.KERNEL_VERSION }} for ${{ env.KERNEL_DEVICE }} | Build Date ${{ env.builddate }} | Build Number ${{ github.run_number }}
           tag_name: ${{ env.KERNEL_DEVICE }}-${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.builddate }}-Build_${{ github.run_number }}
           prerelease: true
           files: |
