@@ -340,3 +340,21 @@ jobs:
             ${{ env.WORKSPACE }}/AnyKernel3/dtb.img
             ${{ env.WORKSPACE }}/AnyKernel3/dtbo.img
           generate_release_notes: true
+          
+          name: Telegram Message
+
+      - name: 📨 Post release to Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            #${{ env.KERNEL_NAME }} #Kernel
+            Build Date: 08-Aug-2023
+            Version: ${{ env.KERNEL_VERSION }}
+            KernelSU version: v0.6.6
+            Device: vayu
+
+            <a href="https://github.com/sanjeevstunner/android_kernel_releases/releases/tag/ChanandlerBong_v4.14.321-vayu-KernelSU-20230810-Build_16"><b>Download</b></a> | <a href="https://github.com/sanjeevstunner/android_kernel_xiaomi_vayu/commits/main"><b>Changelogs</b></a>
+            <a href="https://chandlerbigg.t.me/">Build Author</a> | <a href="https://chandlers_channel.t.me/">Channel</a> | <a href="http://chandlers_chat.t.me/">Group</a>
+          format: HTML
