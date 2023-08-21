@@ -3,7 +3,7 @@
     "kernelSource": {
       "name": "ChanandlerBong",
       "repo": "https://github.com/sanjeevstunner/android_kernel_xiaomi_vayu",
-      "branch": "321",
+      "branch": "ksu",
       "device": "vayu",
       "defconfig": "vayu_defconfig"
     },
