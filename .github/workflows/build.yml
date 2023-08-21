@@ -226,6 +226,7 @@ jobs:
 
       - name: "🔡 Generate name for files and artifacts"
         run: |
+          echo "GITHUB_RELEASE_TAG=${{ github.run_number }}.v${{ env.KERNEL_VERSION }}.${{ env.KERNEL_NAME }}.${{ env.KERNEL_DEVICE }}.${{ env.builddate }}" >> $GITHUB_ENV
           if [ "${{ env.withKernelSU }}" == "true" ]; then
             echo "GITHUB_RELEASE_TITLE=${{ env.KERNEL_NAME }} v${{ env.KERNEL_VERSION }} for ${{ env.KERNEL_DEVICE }} with KernelSU | Build Date ${{ env.builddate }} | Build Number ${{ github.run_number }}" >> $GITHUB_ENV
             echo "KERNEL_ZIP_NAME=${{ env.KERNEL_NAME }}_v${{ env.KERNEL_VERSION }}-${{ env.KERNEL_DEVICE }}-KernelSU-${{ env.builddate }}-Build_${{ github.run_number }}" >> $GITHUB_ENV
@@ -332,7 +333,7 @@ jobs:
             - If the kernel includes Kernel SU, it'll be mentioned in the release title and kernel zip. 
             - You can ping me, Sanjeev aka Chandler in my [Telegram group](https://t.me/chandlers_chat). While you're at it, consider subscribing to my [Telegram Channel](https://t.me/chandlers_channel) if you find value in it 😉
             > And here is your reminder that you're doing great, just have more water and embrace good sleep ❤️ 
-          tag_name: ${{ env.KERNEL_ZIP_NAME }}
+          tag_name: ${{ env.GITHUB_RELEASE_TAG }}
           prerelease: true
           files: |
             ${{ env.WORKSPACE }}/${{ env.KERNEL_ZIP_NAME }}.zip
