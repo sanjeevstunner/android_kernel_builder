@@ -332,7 +332,7 @@ jobs:
             - If the kernel includes Kernel SU, it'll be mentioned in the release title and kernel zip. 
             - You can ping me, Sanjeev aka Chandler in my [Telegram group](https://t.me/chandlers_chat). While you're at it, consider subscribing to my [Telegram Channel](https://t.me/chandlers_channel) if you find value in it 😉
             > And here is your reminder that you're doing great, just have more water and embrace good sleep ❤️ 
-          tag_name: ${{ env.KERNEL_ZIP_NAME }}
+          tag_name: ${{ github.run_number }}
           prerelease: true
           files: |
             ${{ env.WORKSPACE }}/${{ env.KERNEL_ZIP_NAME }}.zip
