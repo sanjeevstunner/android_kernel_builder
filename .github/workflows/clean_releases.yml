@@ -1,0 +1,21 @@
+name: Delete Prerelease Releases
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete_prerelease_releases:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Delete Prerelease Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for release_id in $(curl -sH "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases | jq -r '.[] | select(.prerelease == true) | .id'); do
+            echo "Deleting prerelease release with ID: $release_id"
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/$release_id"
+          done
