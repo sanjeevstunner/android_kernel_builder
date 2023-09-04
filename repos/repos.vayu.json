@@ -3,11 +3,11 @@
     "kernelSource": {
       "name": "ChanandlerBong",
       "repo": "https://github.com/sanjeevstunner/android_kernel_xiaomi_vayu",
-      "branch": "324_new",
+      "branch": "ksu",
       "device": "vayu",
       "defconfig": "vayu_defconfig"
     },
-    "withKernelSU": false,
+    "withKernelSU": true,
     "toolchains": [
       {
         "repo": "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b",
